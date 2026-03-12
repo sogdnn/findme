@@ -110,3 +110,4 @@ def serve_upload(filename):
         os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER']),
         filename
     )
+cloudinary
