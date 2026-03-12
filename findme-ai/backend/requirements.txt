@@ -8,5 +8,5 @@ opencv-python-headless==4.9.0.80
 deepface==0.0.93
 # ── DeepFace model backends (installed automatically by deepface) ──
 # ── Lighter alternative if TensorFlow is too heavy ──
-onnxruntime==1.18.0
+onnxruntime==1.24.1
 # insightface==0.7.3
