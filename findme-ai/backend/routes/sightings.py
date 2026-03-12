@@ -7,16 +7,22 @@ GET  /api/sightings/<id>     — get one sighting
 """
 
 import os
-import uuid
+import cloudinary
+import cloudinary.uploader
 from flask import Blueprint, request, jsonify, current_app
-from werkzeug.utils import secure_filename
 from database import db, Sighting, MissingCase, Match
 from face_engine import compare_faces
+
+cloudinary.config(
+    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key    = os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
+)
 
 sightings_bp = Blueprint('sightings', __name__)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-MATCH_THRESHOLD = 85.0   # % similarity required to flag as a possible match
+MATCH_THRESHOLD = 85.0
 
 
 def allowed_file(filename):
@@ -26,18 +32,6 @@ def allowed_file(filename):
 # ── POST /api/sightings ───────────────────────────────────────────────────────
 @sightings_bp.route('', methods=['POST'])
 def create_sighting():
-    """
-    Upload a sighting photo. After saving, the backend automatically
-    compares it against every active missing-person case and stores
-    any match above the threshold.
-
-    Form fields:
-      - photo     (file, required)
-      - location  (string, optional)
-      - latitude  (float, optional)
-      - longitude (float, optional)
-      - notes     (string, optional)
-    """
     if 'photo' not in request.files:
         return jsonify({'error': 'Photo is required'}), 400
 
@@ -45,13 +39,9 @@ def create_sighting():
     if not file or not allowed_file(file.filename):
         return jsonify({'error': 'Invalid file type'}), 400
 
-    # Persist photo to disk
-    ext      = file.filename.rsplit('.', 1)[1].lower()
-    filename = f"sight_{uuid.uuid4().hex}.{ext}"
-    upload_dir = current_app.config['UPLOAD_FOLDER']
-    os.makedirs(upload_dir, exist_ok=True)
-    sight_path = os.path.join(upload_dir, filename)
-    file.save(sight_path)
+    # Upload to Cloudinary
+    upload_result = cloudinary.uploader.upload(file)
+    filename = upload_result['secure_url']
 
     # Save sighting record
     sighting = Sighting(
@@ -62,17 +52,14 @@ def create_sighting():
         notes      = request.form.get('notes', ''),
     )
     db.session.add(sighting)
-    db.session.flush()  # get sighting.id before commit
+    db.session.flush()
 
     # ── Auto-match against all active cases ───────────────────────────────────
     matches_found = []
     active_cases  = MissingCase.query.filter_by(status='active').all()
 
     for case in active_cases:
-        case_path = os.path.join(upload_dir, case.photo_path)
-
-        # Call the AI face comparison engine
-        result = compare_faces(case_path, sight_path)
+        result = compare_faces(case.photo_path, filename)
 
         if result['similarity'] >= MATCH_THRESHOLD:
             match = Match(
