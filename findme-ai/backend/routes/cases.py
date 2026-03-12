@@ -10,16 +10,14 @@ PATCH /api/cases/<id>  — update status (active → found)
 import os
 import cloudinary
 import cloudinary.uploader
+from flask import Blueprint, request, jsonify, current_app
+from database import db, MissingCase, Match
 
 cloudinary.config(
     cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
     api_key    = os.environ.get('CLOUDINARY_API_KEY'),
     api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
 )
-import uuid
-from flask import Blueprint, request, jsonify, current_app, send_from_directory
-from werkzeug.utils import secure_filename
-from database import db, MissingCase, Match
 
 cases_bp = Blueprint('cases', __name__)
 
@@ -33,17 +31,6 @@ def allowed_file(filename):
 # ── POST /api/cases ───────────────────────────────────────────────────────────
 @cases_bp.route('', methods=['POST'])
 def create_case():
-    """
-    Accepts multipart/form-data with:
-      - photo        (file, required)
-      - name         (string, required)
-      - age          (int, optional)
-      - description  (string, optional)
-      - last_seen    (string, optional)
-      - latitude     (float, optional)
-      - longitude    (float, optional)
-    """
-    # Validate that a photo was provided
     if 'photo' not in request.files:
         return jsonify({'error': 'Photo is required'}), 400
 
@@ -51,10 +38,10 @@ def create_case():
     if file.filename == '' or not allowed_file(file.filename):
         return jsonify({'error': 'Invalid or missing file'}), 400
 
-    # Save photo with a UUID filename to avoid collisions
+    # Upload to Cloudinary
     upload_result = cloudinary.uploader.upload(file)
     filename = upload_result['secure_url']
-    # Persist to database
+
     case = MissingCase(
         name        = request.form.get('name', 'Unknown'),
         age         = request.form.get('age',  type=int),
@@ -74,7 +61,6 @@ def create_case():
 # ── GET /api/cases ────────────────────────────────────────────────────────────
 @cases_bp.route('', methods=['GET'])
 def list_cases():
-    """Return all missing-person cases, newest first."""
     cases = MissingCase.query.order_by(MissingCase.created_at.desc()).all()
     return jsonify([c.to_dict() for c in cases])
 
@@ -82,10 +68,8 @@ def list_cases():
 # ── GET /api/cases/<id> ───────────────────────────────────────────────────────
 @cases_bp.route('/<int:case_id>', methods=['GET'])
 def get_case(case_id):
-    """Return a single case with its matches."""
     case = MissingCase.query.get_or_404(case_id)
     data = case.to_dict()
-    # Attach any matches found for this case
     data['matches'] = [m.to_dict() for m in case.matches]
     return jsonify(data)
 
@@ -93,21 +77,9 @@ def get_case(case_id):
 # ── PATCH /api/cases/<id> ─────────────────────────────────────────────────────
 @cases_bp.route('/<int:case_id>', methods=['PATCH'])
 def update_case(case_id):
-    """Update a case's status (e.g. mark as found)."""
     case = MissingCase.query.get_or_404(case_id)
     body = request.get_json(silent=True) or {}
     if 'status' in body:
         case.status = body['status']
     db.session.commit()
     return jsonify(case.to_dict())
-
-
-# ── GET /api/uploads/<filename> ───────────────────────────────────────────────
-@cases_bp.route('/uploads/<path:filename>')
-def serve_upload(filename):
-    """Serve uploaded image files (used by the frontend <img> tags)."""
-    return send_from_directory(
-        os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER']),
-        filename
-    )
-cloudinary
