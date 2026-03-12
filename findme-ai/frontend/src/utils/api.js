@@ -3,8 +3,7 @@
  * All functions return the parsed JSON data or throw on error.
  */
 
-const BASE = '/api';  // proxied to http://localhost:5000 in dev
-
+const BASE = 'https://findme-27ql.onrender.com/api';
 // ── Generic helpers ───────────────────────────────────────────────────────────
 
 async function get(path) {
