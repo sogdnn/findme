@@ -8,6 +8,14 @@ PATCH /api/cases/<id>  — update status (active → found)
 """
 
 import os
+import cloudinary
+import cloudinary.uploader
+
+cloudinary.config(
+    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key    = os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
+)
 import uuid
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from werkzeug.utils import secure_filename
@@ -44,12 +52,8 @@ def create_case():
         return jsonify({'error': 'Invalid or missing file'}), 400
 
     # Save photo with a UUID filename to avoid collisions
-    ext      = file.filename.rsplit('.', 1)[1].lower()
-    filename = f"case_{uuid.uuid4().hex}.{ext}"
-    upload_dir = current_app.config['UPLOAD_FOLDER']
-    os.makedirs(upload_dir, exist_ok=True)
-    file.save(os.path.join(upload_dir, filename))
-
+    upload_result = cloudinary.uploader.upload(file)
+    filename = upload_result['secure_url']
     # Persist to database
     case = MissingCase(
         name        = request.form.get('name', 'Unknown'),
