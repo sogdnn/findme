@@ -1,0 +1,51 @@
+/* CaseDetailPage.css */
+
+.detail-header {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+  padding: 28px 0;
+  align-items: start;
+}
+@media(max-width:700px){ .detail-header { grid-template-columns: 1fr; } }
+
+.detail-photo {
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+}
+.detail-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.detail-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+}
+
+.info-row {
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.map-wrapper {
+  height: 320px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.match-card { position: relative; }
+.match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
