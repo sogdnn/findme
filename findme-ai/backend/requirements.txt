@@ -5,7 +5,6 @@ werkzeug==3.0.3
 numpy==1.26.4
 opencv-python-headless==4.9.0.80
 # ── Primary AI engine (GPU optional) ──
-deepface==0.0.93
 # ── DeepFace model backends (installed automatically by deepface) ──
 # ── Lighter alternative if TensorFlow is too heavy ──
 onnxruntime==1.24.1
