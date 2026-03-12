@@ -7,7 +7,7 @@ opencv-python-headless==4.9.0.80
 # ── Primary AI engine (GPU optional) ──
 deepface==0.0.93
 # ── DeepFace model backends (installed automatically by deepface) ──
-tensorflow==2.16.1   ; sys_platform != 'darwin'
+tensorflow-cpu==2.16.1   ; sys_platform != 'darwin'
 tensorflow-macos==2.16.1 ; sys_platform == 'darwin' and platform_machine == 'arm64'
 # ── Lighter alternative if TensorFlow is too heavy ──
 # onnxruntime==1.18.0
