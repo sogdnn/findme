@@ -9,6 +9,8 @@ PATCH /api/cases/<id>  — update status (active → found)
 
 import os
 import base64
+import io
+from PIL import Image
 from flask import Blueprint, request, jsonify
 from database import db, MissingCase, Match
 
@@ -31,10 +33,13 @@ def create_case():
     if file.filename == '' or not allowed_file(file.filename):
         return jsonify({'error': 'Invalid or missing file'}), 400
 
-    # Convert image to base64 and store in database
-    file_data = file.read()
-    ext = file.filename.rsplit('.', 1)[1].lower()
-    filename = f"data:image/{ext};base64,{base64.b64encode(file_data).decode('utf-8')}"
+    # Resize and compress image before storing as base64
+    img = Image.open(file)
+    img.thumbnail((400, 400))
+    buffer = io.BytesIO()
+    img.save(buffer, format='JPEG', quality=70)
+    file_data = buffer.getvalue()
+    filename = f"data:image/jpeg;base64,{base64.b64encode(file_data).decode('utf-8')}"
 
     case = MissingCase(
         name        = request.form.get('name', 'Unknown'),
