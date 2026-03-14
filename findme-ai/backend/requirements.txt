@@ -9,4 +9,4 @@ opencv-python-headless==4.9.0.80
 # ── Lighter alternative if TensorFlow is too heavy ──
 onnxruntime==1.24.1
 # insightface==0.7.3
-cloudinary
+Pillow
