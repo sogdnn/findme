@@ -7,17 +7,10 @@ GET  /api/sightings/<id>     — get one sighting
 """
 
 import os
-import cloudinary
-import cloudinary.uploader
-from flask import Blueprint, request, jsonify, current_app
+import base64
+from flask import Blueprint, request, jsonify
 from database import db, Sighting, MissingCase, Match
 from face_engine import compare_faces
-
-cloudinary.config(
-    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    api_key    = os.environ.get('CLOUDINARY_API_KEY'),
-    api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
-)
 
 sightings_bp = Blueprint('sightings', __name__)
 
@@ -39,9 +32,10 @@ def create_sighting():
     if not file or not allowed_file(file.filename):
         return jsonify({'error': 'Invalid file type'}), 400
 
-    # Upload to Cloudinary
-    upload_result = cloudinary.uploader.upload(file)
-    filename = upload_result['secure_url']
+    # Convert image to base64 and store in database
+    file_data = file.read()
+    ext = file.filename.rsplit('.', 1)[1].lower()
+    filename = f"data:image/{ext};base64,{base64.b64encode(file_data).decode('utf-8')}"
 
     # Save sighting record
     sighting = Sighting(
