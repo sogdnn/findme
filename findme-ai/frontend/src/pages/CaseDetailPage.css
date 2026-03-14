@@ -10,7 +10,7 @@
 .detail-photo {
   border-radius: var(--radius);
   overflow: hidden;
-  aspect-ratio: 4/3;
+  aspect-ratio: 3/4;
   background: var(--bg-raised);
   border: 1px solid var(--border);
 }
