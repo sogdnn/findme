@@ -9,7 +9,7 @@ GET  /api/sightings/<id>     — get one sighting
 import os
 import base64
 import io
-from PIL import Image
+from PIL import Image, ImageOps
 from flask import Blueprint, request, jsonify
 from database import db, Sighting, MissingCase, Match
 from face_engine import compare_faces
@@ -34,9 +34,10 @@ def create_sighting():
     if not file or not allowed_file(file.filename):
         return jsonify({'error': 'Invalid file type'}), 400
 
-    # Resize and compress image before storing as base64
+    # Resize, fix rotation and compress image before storing as base64
     img = Image.open(file)
-    img.thumbnail((400, 400))
+    img = ImageOps.exif_transpose(img)
+    img.thumbnail((400, 600))
     buffer = io.BytesIO()
     img.save(buffer, format='JPEG', quality=70)
     file_data = buffer.getvalue()
