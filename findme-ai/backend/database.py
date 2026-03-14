@@ -23,14 +23,13 @@ class MissingCase(db.Model):
     name        = db.Column(db.String(120), nullable=False)
     age         = db.Column(db.Integer)
     description = db.Column(db.Text)
-    last_seen   = db.Column(db.String(200))          # free-text location
-    latitude    = db.Column(db.Float, default=0.0)   # for map pin
+    last_seen   = db.Column(db.String(200))
+    latitude    = db.Column(db.Float, default=0.0)
     longitude   = db.Column(db.Float, default=0.0)
-    photo_path  = db.Column(db.String(300), nullable=False)  # path on disk
-    status      = db.Column(db.String(20), default='active') # active | found
+    photo_path  = db.Column(db.Text, nullable=False)
+    status      = db.Column(db.String(20), default='active')
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Back-reference to matches
     matches     = db.relationship('Match', backref='case', lazy=True)
 
     def to_dict(self):
@@ -42,7 +41,7 @@ class MissingCase(db.Model):
             'last_seen':   self.last_seen,
             'latitude':    self.latitude,
             'longitude':   self.longitude,
-            'photo_url':   f'/api/uploads/{self.photo_path}',
+            'photo_url':   self.photo_path,
             'status':      self.status,
             'created_at':  self.created_at.isoformat(),
         }
@@ -55,7 +54,7 @@ class Sighting(db.Model):
     __tablename__ = 'sightings'
 
     id          = db.Column(db.Integer, primary_key=True)
-    photo_path  = db.Column(db.String(300), nullable=False)
+    photo_path  = db.Column(db.Text, nullable=False)
     location    = db.Column(db.String(200))
     latitude    = db.Column(db.Float, default=0.0)
     longitude   = db.Column(db.Float, default=0.0)
@@ -67,7 +66,7 @@ class Sighting(db.Model):
     def to_dict(self):
         return {
             'id':          self.id,
-            'photo_url':   f'/api/uploads/{self.photo_path}',
+            'photo_url':   self.photo_path,
             'location':    self.location,
             'latitude':    self.latitude,
             'longitude':   self.longitude,
@@ -85,8 +84,8 @@ class Match(db.Model):
     id           = db.Column(db.Integer, primary_key=True)
     case_id      = db.Column(db.Integer, db.ForeignKey('missing_cases.id'), nullable=False)
     sighting_id  = db.Column(db.Integer, db.ForeignKey('sightings.id'),     nullable=False)
-    similarity   = db.Column(db.Float,   nullable=False)  # 0–100 percentage
-    status       = db.Column(db.String(20), default='pending')  # pending | confirmed | dismissed
+    similarity   = db.Column(db.Float,   nullable=False)
+    status       = db.Column(db.String(20), default='pending')
     created_at   = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
