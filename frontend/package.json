@@ -1,0 +1,25 @@
+{
+  "name": "findme-ai-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1",
+    "react-scripts": "5.0.1",
+    "axios": "^1.7.2",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "proxy": "http://localhost:5000",
+  "browserslist": {
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+  }
+}
+/var/folders/mb/6wwqzrf124b2_rrw4f96drz40000gn/T/TemporaryItems/NSIRD_screencaptureui_VmbiqP/Screenshot 2026-03-12 at 16.12.30.png
+/var/folders/mb/6wwqzrf124b2_rrw4f96drz40000gn/T/TemporaryItems/NSIRD_screencaptureui_hUSowF/Screenshot 2026-03-12 at 17.01.26.png

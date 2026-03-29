@@ -1,0 +1,102 @@
+/* App.css — Navigation & shell styles */
+
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ── Navbar ─────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,12,16,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -.01em;
+}
+.nav-logo strong { color: var(--amber); }
+.logo-icon { color: var(--amber); font-size: 22px; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color .15s;
+}
+.nav-link:hover, .nav-link.active {
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-link.active {
+  background: var(--bg-raised);
+}
+
+.nav-cta {
+  padding: 7px 16px;
+  background: var(--amber);
+  color: #0a0c10;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .2s;
+}
+.nav-cta:hover { background: #ffc04d; text-decoration: none; }
+
+.nav-cta-ghost {
+  padding: 7px 16px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all .2s;
+}
+.nav-cta-ghost:hover { border-color: var(--amber); color: var(--text); text-decoration: none; }
+
+/* ── Main content ───────────────────────────── */
+.main-content { flex: 1; }
+
+/* ── Page header ────────────────────────────── */
+.page-header {
+  padding: 48px 0 32px;
+}
+.page-header .eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 10px;
+}
+.page-header h1 { font-size: 32px; }
+.page-header p  { color: var(--text-muted); margin-top: 8px; max-width: 520px; }
